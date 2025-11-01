@@ -1,6 +1,8 @@
 package server
 
 import (
+	"go-audio-stream/internal/database"
+	"go-audio-stream/internal/handlers"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -20,21 +22,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 		MaxAge:           300,
 	}))
 
-	e.GET("/", s.HelloWorldHandler)
-
-	e.GET("/health", s.healthHandler)
+	e.GET("/health", s.withClient(handlers.HealthHandler))
+	e.GET("/hello", s.withClient(handlers.HelloWorldHandler))
 
 	return e
 }
 
-func (s *Server) HelloWorldHandler(c echo.Context) error {
-	resp := map[string]string{
-		"message": "Hello World",
+func (s *Server) withClient(handler func(echo.Context, database.Service) error) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return handler(c, s.db)
 	}
-
-	return c.JSON(http.StatusOK, resp)
-}
-
-func (s *Server) healthHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, s.db.Health())
 }
