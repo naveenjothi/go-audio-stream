@@ -22,6 +22,9 @@ type Service interface {
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close() error
+	Create(query string, args ...interface{}) (sql.Result, error)
+	Update(query string, args ...interface{}) (sql.Result, error)
+	Find(query string, args ...interface{}) (*sql.Row, error)
 }
 
 type service struct {
@@ -112,4 +115,42 @@ func (s *service) Health() map[string]string {
 func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
+}
+
+func (s *service) Create(query string, args ...interface{}) (sql.Result, error) {
+	stmt, err := s.db.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare statement: %w", err)
+	}
+
+	defer stmt.Close()
+	result, err := stmt.Exec(args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute create query: %w", err)
+	}
+	return result, nil
+}
+
+func (s *service) Update(query string, args ...interface{}) (sql.Result, error) {
+	stmt, err := s.db.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare statement: %w", err)
+	}
+
+	defer stmt.Close()
+	result, err := stmt.Exec(args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute update query: %w", err)
+	}
+	return result, nil
+}
+
+func (s *service) Find(query string, args ...interface{}) (*sql.Row, error) {
+	stmt, err := s.db.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	return stmt.QueryRow(args...), nil
 }

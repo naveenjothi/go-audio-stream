@@ -24,6 +24,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/health", s.withClient(handlers.HealthHandler))
 	e.GET("/hello", s.withClient(handlers.HelloWorldHandler))
+	userEndpointGroup := e.Group("/users")
+
+	userEndpointGroup.POST("/", s.withClient(handlers.CreateUserHandler))
+	userEndpointGroup.GET("/:id", s.withClient(handlers.FindOneUserById))
 
 	return e
 }

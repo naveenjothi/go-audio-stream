@@ -9,6 +9,8 @@ services:
     ports:
       - "${BLUEPRINT_DB_PORT}:5432"
     volumes:
+      # This maps your local SQL file into the container's init directory
+      - ./init-schema.sql:/docker-entrypoint-initdb.d/init-schema.sql
       - psql_volume_bp:/var/lib/postgresql/
 
 volumes:
