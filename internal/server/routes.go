@@ -3,6 +3,7 @@ package server
 import (
 	"go-audio-stream/internal/database"
 	"go-audio-stream/internal/handlers"
+	"go-audio-stream/internal/middlewares"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -21,6 +22,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+
+	e.Use(middlewares.CustomResponseMiddleware)
 
 	e.GET("/health", s.withClient(handlers.HealthHandler))
 	e.GET("/hello", s.withClient(handlers.HelloWorldHandler))
