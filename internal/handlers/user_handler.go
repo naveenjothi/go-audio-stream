@@ -1,14 +1,13 @@
 package handlers
 
 import (
-	"context"
+	"go-audio-stream/internal/database"
 	"go-audio-stream/internal/models"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/random"
-	"gorm.io/gorm"
 )
 
 func calculateUserName(email string) string {
@@ -17,36 +16,40 @@ func calculateUserName(email string) string {
 	return emailStr + randomNumber
 }
 
-func CreateUserHandler(c echo.Context, db *gorm.DB) error {
-	first_name := c.FormValue("first_name")
-	last_name := c.FormValue("last_name")
-	email := c.FormValue("email")
-	mobile := c.FormValue("mobile")
-	user_name := calculateUserName(email)
-	ctx := context.Background()
-	user := models.UserModel{FirstName: first_name, LastName: last_name, Email: email, Mobile: mobile, Username: user_name}
-	err := gorm.G[models.UserModel](db).Create(ctx, &user)
-	if err != nil {
-		return err
+func CreateUserHandler(c echo.Context, db database.Service) error {
+	user := new(models.UserModel)
+
+	if err := c.Bind(user); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
+
+	// Validate required fields
+	if user.Email == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "email is required"})
+	}
+	if user.FirstName == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "first_name is required"})
+	}
+
+	user.Username = calculateUserName(user.Email)
+	_, err := db.Create(user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
 	return c.JSON(http.StatusCreated, user)
 }
 
-// func FindOneUserById(c echo.Context, db database.Service) error {
-// 	id := c.Param("id")
+func FindOneUserById(c echo.Context, db database.Service) error {
+	id := c.Param("id")
 
-// 	var user models.User
+	var user models.UserModel
 
-// 	result, err := db.Find(`SELECT id, email, first_name, last_name, mobile, user_name FROM users WHERE id=$1;`, id)
-// 	if err != nil {
-// 		return err
-// 	}
+	_, err := db.Find(&user, "id = ?", id)
 
-// 	err = result.Scan(&user.Id, &user.Email, &user.FirstName, &user.LastName, &user.Mobile, &user.Username)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
 
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return c.JSON(http.StatusOK, user)
-// }
+	return c.JSON(http.StatusOK, user)
+}
