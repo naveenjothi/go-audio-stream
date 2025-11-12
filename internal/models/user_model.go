@@ -1,6 +1,6 @@
 package models
 
-type UserModel struct {
+type User struct {
 	BaseModel
 	Email     string `json:"email" form:"email" gorm:"uniqueIndex"`
 	FirstName string `json:"first_name" form:"first_name"`
@@ -8,6 +8,6 @@ type UserModel struct {
 	Mobile    string `json:"mobile" form:"mobile" gorm:"uniqueIndex"`
 	Username  string `json:"user_name" form:"user_name" gorm:"uniqueIndex"`
 
-	Follows   []ArtistModel   `json:"follows,omitempty" gorm:"many2many:user_follows_artist;"`
-	Playlists []PlaylistModel `json:"playlists,omitempty" gorm:"foreignKey:CreatorUserID"`
+	Follows   []Artist   `json:"follows,omitempty" gorm:"many2many:user_follows_artist;"`
+	Playlists []Playlist `json:"playlists,omitempty" gorm:"foreignKey:CreatorUserID"`
 }

@@ -57,10 +57,11 @@ func New() Service {
 	}
 
 	gorm_db.AutoMigrate(
-		&models.UserModel{},
-		&models.ArtistModel{},
-		&models.PlaylistModel{},
-		&models.SongModel{},
+		&models.User{},
+		&models.Artist{},
+		&models.Song{},
+		&models.Playlist{},
+		&models.PlaylistSong{},
 	)
 
 	dbInstance = &service{

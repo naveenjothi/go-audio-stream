@@ -17,7 +17,7 @@ func calculateUserName(email string) string {
 }
 
 func CreateUserHandler(c echo.Context, db database.Service) error {
-	user := new(models.UserModel)
+	user := new(models.User)
 
 	if err := c.Bind(user); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
@@ -43,7 +43,7 @@ func CreateUserHandler(c echo.Context, db database.Service) error {
 func FindOneUserById(c echo.Context, db database.Service) error {
 	id := c.Param("id")
 
-	var user models.UserModel
+	var user models.User
 
 	_, err := db.Find(&user, "id = ?", id)
 
