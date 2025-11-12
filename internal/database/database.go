@@ -56,7 +56,12 @@ func New() Service {
 		log.Fatal(err)
 	}
 
-	gorm_db.AutoMigrate(&models.UserModel{})
+	gorm_db.AutoMigrate(
+		&models.UserModel{},
+		&models.ArtistModel{},
+		&models.PlaylistModel{},
+		&models.SongModel{},
+	)
 
 	dbInstance = &service{
 		gorm_db: gorm_db,
