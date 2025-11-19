@@ -31,6 +31,31 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	userEndpointGroup.POST("/", s.withClient(handlers.CreateUserHandler))
 	userEndpointGroup.GET("/:id", s.withClient(handlers.FindOneUserById))
+	userEndpointGroup.PUT("/:id", s.withClient(handlers.UpdateUserHandler))
+	userEndpointGroup.DELETE("/:id", s.withClient(handlers.DeleteUserHandler))
+
+	artistGroup := e.Group("/artists")
+	artistGroup.POST("/", s.withClient(handlers.CreateArtistHandler))
+	artistGroup.GET("/", s.withClient(handlers.FindAllArtists))
+	artistGroup.GET("/:id", s.withClient(handlers.FindOneArtistById))
+	artistGroup.PUT("/:id", s.withClient(handlers.UpdateArtistHandler))
+	artistGroup.DELETE("/:id", s.withClient(handlers.DeleteArtistHandler))
+
+	songGroup := e.Group("/songs")
+	songGroup.POST("/", s.withClient(handlers.CreateSongHandler))
+	songGroup.GET("/", s.withClient(handlers.FindAllSongs))
+	songGroup.GET("/:id", s.withClient(handlers.FindOneSongById))
+	songGroup.PUT("/:id", s.withClient(handlers.UpdateSongHandler))
+	songGroup.DELETE("/:id", s.withClient(handlers.DeleteSongHandler))
+
+	playlistGroup := e.Group("/playlists")
+	playlistGroup.POST("/", s.withClient(handlers.CreatePlaylistHandler))
+	playlistGroup.GET("/", s.withClient(handlers.FindAllPlaylists))
+	playlistGroup.GET("/:id", s.withClient(handlers.FindOnePlaylistById))
+	playlistGroup.PUT("/:id", s.withClient(handlers.UpdatePlaylistHandler))
+	playlistGroup.DELETE("/:id", s.withClient(handlers.DeletePlaylistHandler))
+	playlistGroup.POST("/:id/songs", s.withClient(handlers.AddSongToPlaylistHandler))
+	playlistGroup.DELETE("/:id/songs/:song_id", s.withClient(handlers.RemoveSongFromPlaylistHandler))
 
 	return e
 }
