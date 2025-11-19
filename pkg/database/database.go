@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-	"go-audio-stream/internal/models"
+	"go-audio-stream/pkg/models"
 	"log"
 	"os"
 	"strconv"
@@ -204,4 +204,8 @@ func (s *service) Delete(model interface{}, where interface{}, whereArgs ...inte
 
 func (s *service) GetDB() *gorm.DB {
 	return s.gorm_db
+}
+
+func (s *service) Seed() error {
+	return nil
 }

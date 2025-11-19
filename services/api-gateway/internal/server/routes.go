@@ -1,9 +1,9 @@
 package server
 
 import (
-	"go-audio-stream/internal/database"
-	"go-audio-stream/internal/handlers"
-	"go-audio-stream/internal/middlewares"
+	"go-audio-stream/pkg/database"
+	"go-audio-stream/pkg/middlewares"
+	"go-audio-stream/services/api-gateway/internal/handlers"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

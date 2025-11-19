@@ -1,27 +1,43 @@
 # Project go-audio-stream
 
-One Paragraph of project description goes here
+This project is a microservices-based audio streaming application built with Go. It uses a **Go Workspace** structure to manage multiple services and shared packages in a single monorepo.
+
+## Workspace Structure
+
+- **`go.work`**: Workspace definition.
+- **`services/`**: Microservices.
+  - `api-gateway`: The main entry point for the API.
+- **`pkg/`**: Shared libraries.
+  - `database`: Database connection and helpers.
+  - `models`: Shared data models.
+  - `middlewares`: Shared HTTP middlewares.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-## MakeFile
+### Prerequisites
+
+- Go 1.18+
+- Docker & Docker Compose
+
+## Makefile Commands
 
 Run build make command with tests
 ```bash
 make all
 ```
 
-Build the application
+Build the API Gateway
 ```bash
 make build
 ```
 
-Run the application
+Run the API Gateway
 ```bash
 make run
 ```
+
 Create DB container
 ```bash
 make docker-run
@@ -37,12 +53,12 @@ DB Integrations Test:
 make itest
 ```
 
-Live reload the application:
+Live reload the application (requires `air`):
 ```bash
 make watch
 ```
 
-Run the test suite:
+Run the test suite for all services and packages:
 ```bash
 make test
 ```
@@ -50,4 +66,9 @@ make test
 Clean up binary from the last build:
 ```bash
 make clean
+```
+
+Tidy all Go modules:
+```bash
+make tidy
 ```

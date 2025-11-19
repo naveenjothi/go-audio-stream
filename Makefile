@@ -5,13 +5,12 @@ all: build test
 
 build:
 	@echo "Building..."
-	
-	
-	@go build -o main cmd/api/main.go
+	@go build -o main services/api-gateway/cmd/main.go
 
 # Run the application
 run:
-	@go run cmd/api/main.go
+	@go run services/api-gateway/cmd/main.go
+
 # Create DB container
 docker-run:
 	@if docker compose up --build 2>/dev/null; then \
@@ -34,10 +33,11 @@ docker-down:
 test:
 	@echo "Testing..."
 	@go test ./... -v
+
 # Integrations Tests for the application
 itest:
 	@echo "Running integration tests..."
-	@go test ./internal/database -v
+	@go test ./pkg/database -v
 
 # Clean the binary
 clean:
@@ -61,4 +61,13 @@ watch:
             fi; \
         fi
 
-.PHONY: all build run test clean watch docker-run docker-down itest
+# Tidy all modules
+tidy:
+	@echo "Tidying modules..."
+	@cd services/api-gateway && go mod tidy
+	@cd pkg/database && go mod tidy
+	@cd pkg/models && go mod tidy
+	@cd pkg/middlewares && go mod tidy
+	@echo "Done."
+
+.PHONY: all build run test clean watch docker-run docker-down itest tidy

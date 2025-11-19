@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-audio-stream/internal/database"
-	"go-audio-stream/internal/models"
+	"go-audio-stream/pkg/database"
+	"go-audio-stream/pkg/models"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

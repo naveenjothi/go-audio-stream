@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"go-audio-stream/internal/database"
+	"go-audio-stream/pkg/database"
 )
 
 type Server struct {
