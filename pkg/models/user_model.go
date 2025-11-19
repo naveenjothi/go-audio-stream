@@ -8,6 +8,14 @@ type User struct {
 	Mobile    string `json:"mobile" form:"mobile" gorm:"uniqueIndex"`
 	Username  string `json:"user_name" form:"user_name" gorm:"uniqueIndex"`
 
-	Follows   []Artist   `json:"follows,omitempty" gorm:"many2many:user_follows_artist;"`
-	Playlists []Playlist `json:"playlists,omitempty" gorm:"foreignKey:CreatorUserID"`
+	Follows     []Artist    `json:"follows,omitempty" gorm:"many2many:user_follows_artist;"`
+	Playlists   []Playlist  `json:"playlists,omitempty" gorm:"foreignKey:CreatorUserID"`
+	Preferences Preferences `json:"preferences" gorm:"foreignKey:UserID"`
+}
+
+type Preferences struct {
+	UserID uint `gorm:"foreignKey:User"`
+
+	Language            string   `json:"language"`
+	SubscribedLanguages []string `json:"subscribed_languages"`
 }
