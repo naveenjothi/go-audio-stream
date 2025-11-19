@@ -25,8 +25,9 @@ type Service interface {
 	// It returns an error if the connection cannot be closed.
 	Close() error
 	Create(value interface{}) (*gorm.DB, error)
-	Update(model interface{}, updates interface{}) (*gorm.DB, error)
+	Update(model interface{}, updates interface{}, where interface{}, whereArgs ...interface{}) (*gorm.DB, error)
 	Find(dest interface{}, conditions ...interface{}) (*gorm.DB, error)
+	Delete(model interface{}, where interface{}, whereArgs ...interface{}) (*gorm.DB, error)
 	GetDB() *gorm.DB
 }
 
@@ -145,11 +146,27 @@ func (s *service) Create(value interface{}) (*gorm.DB, error) {
 	return result, nil
 }
 
-func (s *service) Update(model interface{}, updates interface{}) (*gorm.DB, error) {
-	result := s.gorm_db.Model(model).Updates(updates)
+// Parameters:
+//   - model: The GORM model instance or a pointer to it (used for table name).
+//   - updates: The data to update (e.g., map[string]interface{} or a struct).
+//   - where: The WHERE clause condition (e.g., "id = ?", or a struct/map).
+//   - whereArgs: Optional arguments for the WHERE clause.
+//
+// The function signature is modified to accept the dynamic 'where' and 'whereArgs'.
+func (s *service) Update(model interface{}, updates interface{}, where interface{}, whereArgs ...interface{}) (*gorm.DB, error) {
+	// 1. Start with the model to scope the query.
+	db := s.gorm_db.Model(model)
+
+	// 2. Apply the dynamic WHERE filter.
+	// This uses the provided 'where' expression and 'whereArgs' to construct the filter.
+	db = db.Where(where, whereArgs...)
+
+	result := db.Updates(updates)
+
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to update record: %w", result.Error)
 	}
+
 	return result, nil
 }
 
@@ -158,6 +175,23 @@ func (s *service) Find(dest interface{}, conditions ...interface{}) (*gorm.DB, e
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to find records: %w", result.Error)
 	}
+	return result, nil
+}
+
+func (s *service) Delete(model interface{}, where interface{}, whereArgs ...interface{}) (*gorm.DB, error) {
+	// 1. Start with the model to scope the query.
+	db := s.gorm_db.Model(model)
+
+	// 2. Apply the dynamic WHERE filter.
+	// This uses the provided 'where' expression and 'whereArgs' to construct the filter.
+	db = db.Where(where, whereArgs...)
+
+	result := db.Delete(model)
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to delete record: %w", result.Error)
+	}
+
 	return result, nil
 }
 
