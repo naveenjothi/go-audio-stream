@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"go-audio-stream/services/api-gateway/internal/server"
+	"go-audio-stream/services/catalog-service/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {

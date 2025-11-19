@@ -4,7 +4,7 @@ import (
 	"go-audio-stream/pkg/database"
 	common_handlers "go-audio-stream/pkg/handlers"
 	"go-audio-stream/pkg/middlewares"
-	"go-audio-stream/services/api-gateway/internal/handlers"
+	"go-audio-stream/services/catalog-service/internal/handlers"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

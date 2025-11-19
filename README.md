@@ -6,7 +6,7 @@ This project is a microservices-based audio streaming application built with Go.
 
 - **`go.work`**: Workspace definition.
 - **`services/`**: Microservices.
-  - `api-gateway`: The main entry point for the API.
+  - `catalog-service`: The main entry point for the API.
 - **`pkg/`**: Shared libraries.
   - `database`: Database connection and helpers.
   - `models`: Shared data models.

@@ -1,4 +1,4 @@
-module go-audio-stream/services/api-gateway
+module go-audio-stream/services/catalog-service
 
 go 1.25.3
 

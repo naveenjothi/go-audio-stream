@@ -5,11 +5,11 @@ all: build test
 
 build:
 	@echo "Building..."
-	@go build -o main services/api-gateway/cmd/main.go
+	@go build -o main services/catalog-service/cmd/main.go
 
 # Run the application
 run:
-	@go run services/api-gateway/cmd/main.go
+	@go run services/catalog-service/cmd/main.go
 
 # Create DB container
 docker-run:
@@ -64,7 +64,7 @@ watch:
 # Tidy all modules
 tidy:
 	@echo "Tidying modules..."
-	@cd services/api-gateway && go mod tidy
+	@cd services/catalog-service && go mod tidy
 	@cd pkg/database && go mod tidy
 	@cd pkg/models && go mod tidy
 	@cd pkg/middlewares && go mod tidy
