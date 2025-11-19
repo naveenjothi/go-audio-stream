@@ -2,6 +2,7 @@ package server
 
 import (
 	"go-audio-stream/pkg/database"
+	common_handlers "go-audio-stream/pkg/handlers"
 	"go-audio-stream/pkg/middlewares"
 	"go-audio-stream/services/api-gateway/internal/handlers"
 	"net/http"
@@ -25,8 +26,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.Use(middlewares.CustomResponseMiddleware)
 
-	e.GET("/health", s.withClient(handlers.HealthHandler))
-	e.GET("/hello", s.withClient(handlers.HelloWorldHandler))
+	e.GET("/health", s.withClient(common_handlers.HealthHandler))
+	e.GET("/hello", s.withClient(common_handlers.HelloWorldHandler))
 	userEndpointGroup := e.Group("/users")
 
 	userEndpointGroup.POST("/", s.withClient(handlers.CreateUserHandler))

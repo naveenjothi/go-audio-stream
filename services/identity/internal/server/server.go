@@ -19,7 +19,7 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("API_GATEWAY_PORT"))
+	port, _ := strconv.Atoi(os.Getenv("IDENTITY_PORT"))
 	NewServer := &Server{
 		port: port,
 		db:   database.New(),
