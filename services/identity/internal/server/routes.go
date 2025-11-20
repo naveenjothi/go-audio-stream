@@ -28,7 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middlewares.CustomResponseMiddleware)
 
 	e.GET("/health", s.withClient(common_handlers.HealthHandler))
-	e.POST("/login", s.withFirebaseClient(handlers.LoginHandler))
+	e.POST("/verify-token", s.withFirebaseClient(handlers.VerifyTokenHandler))
 
 	return e
 }

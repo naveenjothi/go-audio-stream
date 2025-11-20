@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func LoginHandler(c echo.Context, db database.Service, firebase_app *firebase.App) error {
+func VerifyTokenHandler(c echo.Context, db database.Service, firebase_app *firebase.App) error {
 	client, err := firebase_app.Auth(context.Background())
 	if err != nil {
 		log.Fatalf("error getting Auth client: %v\n", err)
