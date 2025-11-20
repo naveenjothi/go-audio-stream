@@ -40,3 +40,21 @@ go build -v ./services/api-gateway/...
    ```bash
    go work use ./services/auth-service
    ```
+
+## Database Fixes
+
+### Preferences Model Parse Error
+Fixed a runtime error where `Preferences` struct could not be parsed due to `SubscribedLanguages` being a `[]string` without a serializer.
+
+**Changes:**
+- Added `BaseModel` to `Preferences`.
+- Changed `UserID` to `string` (UUID).
+- Added `gorm:"serializer:json"` to `SubscribedLanguages`.
+
+### Auth Middleware Integration
+Fixed a compilation error in `routes.go` where `AuthMiddleware` was missing the `IdentityClient`.
+
+**Changes:**
+- Updated `Server` struct in `catalog-service` to include `*clients.IdentityClient`.
+- Initialized `IdentityClient` in `NewServer` using `IDENTITY_SERVICE_URL` (defaults to `localhost:50051`).
+- Passed the initialized client to `NewAuthMiddleware` in `routes.go`.

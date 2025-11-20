@@ -11,6 +11,10 @@ build:
 run:
 	@go run services/catalog-service/cmd/main.go
 
+# Run the identity service
+run-identity:
+	@go run services/identity/cmd/main.go
+
 # Create DB container
 docker-run:
 	@if docker compose up --build 2>/dev/null; then \
@@ -70,4 +74,12 @@ tidy:
 	@cd pkg/middlewares && go mod tidy
 	@echo "Done."
 
-.PHONY: all build run test clean watch docker-run docker-down itest tidy
+# Generate Protobuf code
+proto:
+	@echo "Generating Protobuf code..."
+	@protoc --go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		pkg/proto/auth/auth.proto
+	@echo "Done."
+
+.PHONY: all build run test clean watch docker-run docker-down itest tidy proto

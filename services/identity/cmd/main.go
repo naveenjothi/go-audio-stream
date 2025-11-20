@@ -2,17 +2,21 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os/signal"
 	"syscall"
-	"time"
 
+	pb "go-audio-stream/pkg/proto/auth"
+	grpcHandler "go-audio-stream/services/identity/internal/grpc"
 	"go-audio-stream/services/identity/internal/server"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func gracefulShutdown(apiServer *http.Server, done chan bool) {
+func gracefulShutdown(grpcServer *grpc.Server, done chan bool) {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -23,13 +27,8 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	log.Println("shutting down gracefully, press Ctrl+C again to force")
 	stop() // Allow Ctrl+C to force shutdown
 
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := apiServer.Shutdown(ctx); err != nil {
-		log.Printf("Server forced to shutdown with error: %v", err)
-	}
+	// Gracefully stop gRPC server
+	grpcServer.GracefulStop()
 
 	log.Println("Server exiting")
 
@@ -38,19 +37,35 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
+	srv := server.NewServer()
 
-	server := server.NewServer()
+	// gRPC Server
+	grpcServer := grpc.NewServer()
+	authServer := grpcHandler.NewServer(srv.DB, srv.FirebaseApp)
+	pb.RegisterAuthServiceServer(grpcServer, authServer)
+
+	// Health Check Server
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
 
 	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+	go gracefulShutdown(grpcServer, done)
 
-	err := server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		panic(fmt.Sprintf("http server error: %s", err))
-	}
+	// Start gRPC server
+	go func() {
+		lis, err := net.Listen("tcp", ":50051")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		log.Println("gRPC server listening on :50051")
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve gRPC: %v", err)
+		}
+	}()
 
 	// Wait for the graceful shutdown to complete
 	<-done

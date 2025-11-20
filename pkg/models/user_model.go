@@ -15,8 +15,8 @@ type User struct {
 }
 
 type Preferences struct {
-	UserID uint `gorm:"foreignKey:User"`
+	UserID string `gorm:"uniqueIndex"`
 
 	Language            string   `json:"language"`
-	SubscribedLanguages []string `json:"subscribed_languages"`
+	SubscribedLanguages []string `json:"subscribed_languages" gorm:"type:jsonb"`
 }
