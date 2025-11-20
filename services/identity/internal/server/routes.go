@@ -4,8 +4,10 @@ import (
 	"go-audio-stream/pkg/database"
 	common_handlers "go-audio-stream/pkg/handlers"
 	"go-audio-stream/pkg/middlewares"
+	"go-audio-stream/services/identity/internal/handlers"
 	"net/http"
 
+	firebase "firebase.google.com/go/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -26,6 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middlewares.CustomResponseMiddleware)
 
 	e.GET("/health", s.withClient(common_handlers.HealthHandler))
+	e.POST("/login", s.withFirebaseClient(handlers.LoginHandler))
 
 	return e
 }
@@ -33,5 +36,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 func (s *Server) withClient(handler func(echo.Context, database.Service) error) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return handler(c, s.db)
+	}
+}
+
+func (s *Server) withFirebaseClient(handler func(echo.Context, database.Service, *firebase.App) error) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return handler(c, s.db, s.firebase_app)
 	}
 }
