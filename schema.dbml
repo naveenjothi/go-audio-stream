@@ -1,0 +1,124 @@
+Table "artist_song" {
+  "song_id" uuid [not null]
+  "artist_id" uuid [not null]
+
+  Indexes {
+    (song_id, artist_id) [pk, name: "artist_song_pkey"]
+  }
+}
+
+Table "artists" {
+  "id" uuid [pk, not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+  "is_suspended" boolean
+  "name" text
+  "image" text
+  "followers" bigint
+  "verified" boolean
+  "bio" text
+
+  Indexes {
+    deleted_at [type: btree, name: "idx_artists_deleted_at"]
+  }
+}
+
+Table "playlist_songs" {
+  "playlist_id" uuid [not null]
+  "song_id" uuid [not null]
+  "position" bigint [not null]
+  "created_at" timestamp
+
+  Indexes {
+    (playlist_id, song_id) [pk, name: "playlist_songs_pkey"]
+  }
+}
+
+Table "playlists" {
+  "id" uuid [pk, not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+  "is_suspended" boolean
+  "name" text
+  "image" text
+  "private" boolean
+  "description" text
+  "is_collaborative" boolean
+  "creator_user_id" uuid
+  "creator_artist_id" uuid
+
+  Indexes {
+    creator_artist_id [type: btree, name: "idx_playlists_creator_artist_id"]
+    creator_user_id [type: btree, name: "idx_playlists_creator_user_id"]
+    deleted_at [type: btree, name: "idx_playlists_deleted_at"]
+  }
+}
+
+Table "songs" {
+  "id" uuid [pk, not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+  "is_suspended" boolean
+  "name" text
+  "image" text
+  "url" text
+  "video_url" text
+  "duration" integer
+  "explicit" boolean
+  "track_number" smallint
+  "language" text
+
+  Indexes {
+    deleted_at [type: btree, name: "idx_songs_deleted_at"]
+  }
+}
+
+Table "user_follows_artist" {
+  "user_id" uuid [not null]
+  "artist_id" uuid [not null]
+
+  Indexes {
+    (user_id, artist_id) [pk, name: "user_follows_artist_pkey"]
+  }
+}
+
+Table "users" {
+  "id" uuid [pk, not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+  "is_suspended" boolean
+  "email" text
+  "firebase_id" text
+  "first_name" text
+  "last_name" text
+  "mobile" text
+  "username" text
+
+  Indexes {
+    deleted_at [type: btree, name: "idx_users_deleted_at"]
+    email [type: btree, unique, name: "idx_users_email"]
+    firebase_id [type: btree, unique, name: "idx_users_firebase_id"]
+    mobile [type: btree, unique, name: "idx_users_mobile"]
+    username [type: btree, unique, name: "idx_users_username"]
+  }
+}
+
+Ref "fk_artist_song_artist":"artists"."id" < "artist_song"."artist_id"
+
+Ref "fk_artist_song_song":"songs"."id" < "artist_song"."song_id"
+
+Ref "fk_artists_playlists":"artists"."id" < "playlists"."creator_artist_id"
+
+Ref "fk_playlists_playlist_songs":"playlists"."id" < "playlist_songs"."playlist_id"
+
+Ref "fk_songs_playlist_songs":"songs"."id" < "playlist_songs"."song_id"
+
+Ref "fk_user_follows_artist_artist":"artists"."id" < "user_follows_artist"."artist_id"
+
+Ref "fk_user_follows_artist_user":"users"."id" < "user_follows_artist"."user_id"
+
+Ref "fk_users_playlists":"users"."id" < "playlists"."creator_user_id"

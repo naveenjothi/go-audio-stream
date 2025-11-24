@@ -1,4 +1,5 @@
 # Simple Makefile for a Go project
+include .env
 
 # Build the application
 all: build test
@@ -37,6 +38,15 @@ docker-down:
 test:
 	@echo "Testing..."
 	@go test ./... -v
+
+DB_URL=postgres://$(BLUEPRINT_DB_USERNAME):$(BLUEPRINT_DB_PASSWORD)@$(BLUEPRINT_DB_HOST):$(BLUEPRINT_DB_PORT)/$(BLUEPRINT_DB_DATABASE)?sslmode=disable&search_path=$(BLUEPRINT_DB_SCHEMA)
+
+dbml:
+	@echo "Generating schema.dbml..."
+	@docker compose exec -T -e PGPASSWORD=$(BLUEPRINT_DB_PASSWORD) psql_bp pg_dump -U $(BLUEPRINT_DB_USERNAME) -d $(BLUEPRINT_DB_DATABASE) --schema-only > schema.sql
+	@sql2dbml schema.sql --postgres -o schema.dbml
+	@rm schema.sql
+	@echo "Done."
 
 # Integrations Tests for the application
 itest:
