@@ -8,6 +8,7 @@ type User struct {
 	LastName   string `json:"last_name" form:"last_name"`
 	Mobile     string `json:"mobile" form:"mobile" gorm:"uniqueIndex"`
 	Username   string `json:"user_name" form:"user_name" gorm:"uniqueIndex"`
+	PhotoURL   string `json:"photo_url" form:"photo_url"`
 
 	Follows     []Artist    `json:"follows,omitempty" gorm:"many2many:user_follows_artist;"`
 	Playlists   []Playlist  `json:"playlists,omitempty" gorm:"foreignKey:CreatorUserID"`

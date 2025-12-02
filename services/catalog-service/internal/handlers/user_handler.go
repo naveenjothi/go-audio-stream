@@ -45,7 +45,7 @@ func FindOneUserById(c echo.Context, db database.Service) error {
 
 	var user models.User
 
-	_, err := db.Find(&user, "id = ?", id)
+	_, err := db.Find(&user, "firebase_id = ?", id)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})

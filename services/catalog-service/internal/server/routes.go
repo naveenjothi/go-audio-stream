@@ -28,11 +28,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/health", s.withClient(common_handlers.HealthHandler))
 	e.GET("/hello", s.withClient(common_handlers.HelloWorldHandler))
+	e.POST("/api/v1/users", s.withClient(handlers.CreateUserHandler))
 	protectedGroup := e.Group("/api/v1")
 	protectedGroup.Use(middlewares.NewAuthMiddleware(s.identityClient))
 	userEndpointGroup := protectedGroup.Group("/users")
 
-	userEndpointGroup.POST("/", s.withClient(handlers.CreateUserHandler))
 	userEndpointGroup.GET("/:id", s.withClient(handlers.FindOneUserById))
 	userEndpointGroup.PUT("/:id", s.withClient(handlers.UpdateUserHandler))
 	userEndpointGroup.DELETE("/:id", s.withClient(handlers.DeleteUserHandler))

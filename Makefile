@@ -14,7 +14,7 @@ run:
 
 # Run the identity service
 run-identity:
-	@go run services/identity/cmd/main.go
+	@GOOGLE_APPLICATION_CREDENTIALS=./service-account.json go run services/identity/cmd/main.go
 
 # Create DB container
 docker-run:
