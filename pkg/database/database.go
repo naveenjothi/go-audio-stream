@@ -58,12 +58,23 @@ func New() Service {
 		log.Fatal(err)
 	}
 
+	gorm_db.Exec("CREATE EXTENSION IF NOT EXISTS vector")
+
 	gorm_db.AutoMigrate(
 		&models.User{},
 		&models.Artist{},
 		&models.Song{},
 		&models.Playlist{},
 		&models.PlaylistSong{},
+		&models.Device{},
+		&models.DevicePairing{},
+		&models.UserListenHistory{},
+		&models.PlaybackEvent{},
+		&models.PlaybackSession{},
+		&models.SongFeatures{},
+		&models.SongInstrument{},
+		&models.SongTag{},
+		&models.UserLocalSong{},
 	)
 
 	dbInstance = &service{
