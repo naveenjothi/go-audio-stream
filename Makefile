@@ -79,6 +79,7 @@ watch:
 tidy:
 	@echo "Tidying modules..."
 	@cd services/catalog-service && go mod tidy
+	@cd services/migration && go mod tidy
 	@cd pkg/database && go mod tidy
 	@cd pkg/models && go mod tidy
 	@cd pkg/middlewares && go mod tidy
@@ -93,4 +94,54 @@ proto:
 		pkg/proto/auth/auth.proto
 	@echo "Done."
 
-.PHONY: all build run test clean watch docker-run docker-down itest tidy proto
+.PHONY: all build run test clean watch docker-run docker-down itest tidy proto migrate migrate-down migrate-status migrate-new
+
+# Migration targets
+migrate:
+	@echo "Running migrations..."
+	@go run services/migration/cmd/main.go -cmd=up
+
+migrate-down:
+	@echo "Rolling back last migration..."
+	@go run services/migration/cmd/main.go -cmd=down
+
+migrate-status:
+	@echo "Checking migration status..."
+	@go run services/migration/cmd/main.go -cmd=status
+
+migrate-new:
+	@if [ -z "$(name)" ]; then \
+		echo "Usage: make migrate-new name=migration_name"; \
+		exit 1; \
+	fi
+	@version=$$(date +%Y%m%d%H%M%S); \
+	file="services/migration/internal/migrations/$${version}_$(name).go"; \
+	echo "Creating migration: $$file"; \
+	echo 'package migrations' > $$file; \
+	echo '' >> $$file; \
+	echo 'import (' >> $$file; \
+	echo '	"gorm.io/gorm"' >> $$file; \
+	echo ')' >> $$file; \
+	echo '' >> $$file; \
+	echo '// TODO: Add your migration struct name' >> $$file; \
+	echo 'type Migration'$$version' struct{}' >> $$file; \
+	echo '' >> $$file; \
+	echo 'func (m *Migration'$$version') Version() string {' >> $$file; \
+	echo '	return "'$$version'"' >> $$file; \
+	echo '}' >> $$file; \
+	echo '' >> $$file; \
+	echo 'func (m *Migration'$$version') Name() string {' >> $$file; \
+	echo '	return "$(name)"' >> $$file; \
+	echo '}' >> $$file; \
+	echo '' >> $$file; \
+	echo 'func (m *Migration'$$version') Up(db *gorm.DB) error {' >> $$file; \
+	echo '	// TODO: Implement migration' >> $$file; \
+	echo '	return nil' >> $$file; \
+	echo '}' >> $$file; \
+	echo '' >> $$file; \
+	echo 'func (m *Migration'$$version') Down(db *gorm.DB) error {' >> $$file; \
+	echo '	// TODO: Implement rollback' >> $$file; \
+	echo '	return nil' >> $$file; \
+	echo '}' >> $$file; \
+	echo "Created migration: $$file"; \
+	echo "Don't forget to register it in registry.go!"

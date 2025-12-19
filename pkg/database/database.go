@@ -29,7 +29,6 @@ type Service interface {
 	Find(dest interface{}, conditions ...interface{}) (*gorm.DB, error)
 	Delete(model interface{}, where interface{}, whereArgs ...interface{}) (*gorm.DB, error)
 	GetDB() *gorm.DB
-	Seed() error
 }
 
 type service struct {
@@ -75,15 +74,11 @@ func New() Service {
 		&models.SongInstrument{},
 		&models.SongTag{},
 		&models.UserLocalSong{},
+		&models.SchemaMigration{},
 	)
 
 	dbInstance = &service{
 		gorm_db: gorm_db,
-	}
-
-	// Seed the database with sample data
-	if err := dbInstance.Seed(); err != nil {
-		log.Printf("Failed to seed database: %v", err)
 	}
 
 	return dbInstance
@@ -215,8 +210,4 @@ func (s *service) Delete(model interface{}, where interface{}, whereArgs ...inte
 
 func (s *service) GetDB() *gorm.DB {
 	return s.gorm_db
-}
-
-func (s *service) Seed() error {
-	return nil
 }
