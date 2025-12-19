@@ -60,6 +60,21 @@ func (s *Server) RegisterRoutes() http.Handler {
 	playlistGroup.POST("/:id/songs", s.withClient(handlers.AddSongToPlaylistHandler))
 	playlistGroup.DELETE("/:id/songs/:song_id", s.withClient(handlers.RemoveSongFromPlaylistHandler))
 
+	// Upload routes (requires storage client)
+	if s.storageClient != nil {
+		uploadHandler := handlers.NewUploadHandler(s.storageClient)
+		uploadGroup := protectedGroup.Group("/upload")
+		uploadGroup.POST("/audio", uploadHandler.UploadAudio)
+		uploadGroup.POST("/image", uploadHandler.UploadImage)
+
+		filesGroup := protectedGroup.Group("/files")
+		filesGroup.GET("/*", uploadHandler.GetPresignedURL)
+		filesGroup.DELETE("/*", uploadHandler.DeleteFile)
+
+		// Public streaming endpoint (still protected by presigned URL expiry)
+		e.GET("/api/v1/stream/*", uploadHandler.StreamAudio)
+	}
+
 	return e
 }
 

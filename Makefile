@@ -82,6 +82,7 @@ tidy:
 	@cd pkg/database && go mod tidy
 	@cd pkg/models && go mod tidy
 	@cd pkg/middlewares && go mod tidy
+	@cd pkg/storage && go mod tidy
 	@echo "Done."
 
 # Generate Protobuf code

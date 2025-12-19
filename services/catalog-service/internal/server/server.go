@@ -12,6 +12,7 @@ import (
 
 	"go-audio-stream/pkg/clients"
 	"go-audio-stream/pkg/database"
+	"go-audio-stream/pkg/storage"
 )
 
 type Server struct {
@@ -19,6 +20,7 @@ type Server struct {
 
 	db             database.Service
 	identityClient *clients.IdentityClient
+	storageClient  *storage.Client
 }
 
 func NewServer() *http.Server {
@@ -30,10 +32,19 @@ func NewServer() *http.Server {
 		log.Fatalf("Failed to create identity client: %v", err)
 	}
 
+	// Initialize B2 storage client
+	storageConfig := storage.LoadConfig()
+	storageClient, err := storage.NewClient(storageConfig)
+	if err != nil {
+		log.Printf("Warning: Failed to create storage client: %v", err)
+		// Don't fatal - allow service to run without storage
+	}
+
 	NewServer := &Server{
 		port:           port,
 		db:             database.New(),
 		identityClient: identityClient,
+		storageClient:  storageClient,
 	}
 
 	// Declare Server config
@@ -46,6 +57,9 @@ func NewServer() *http.Server {
 	}
 
 	fmt.Printf("Server running on port %d\n", port)
+	if storageClient != nil {
+		fmt.Printf("Storage connected to bucket: %s\n", storageClient.GetBucketName())
+	}
 
 	return server
 }
