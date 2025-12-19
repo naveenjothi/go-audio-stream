@@ -94,7 +94,13 @@ proto:
 		pkg/proto/auth/auth.proto
 	@echo "Done."
 
-.PHONY: all build run test clean watch docker-run docker-down itest tidy proto migrate migrate-down migrate-status migrate-new
+# Generate Swagger docs
+swagger:
+	@echo "Generating Swagger docs..."
+	@cd services/catalog-service && go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/main.go --output docs --parseDependency --parseInternal
+	@echo "Done."
+
+.PHONY: all build run test clean watch docker-run docker-down itest tidy proto migrate migrate-down migrate-status migrate-new swagger
 
 # Migration targets
 migrate:

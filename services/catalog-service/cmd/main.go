@@ -12,6 +12,22 @@ import (
 	"go-audio-stream/services/catalog-service/internal/server"
 )
 
+// @title           Audio Stream Catalog Service
+// @version         1.0
+// @description     This is the catalog service for the audio streaming platform.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name    API Support
+// @contact.url     http://www.swagger.io/support
+// @contact.email   support@swagger.io
+
+// @license.name    Apache 2.0
+// @license.url     http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host            localhost:4000
+// @BasePath        /
+// @schemes         http https
+
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

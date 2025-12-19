@@ -16,6 +16,17 @@ func calculateUserName(email string) string {
 	return emailStr + randomNumber
 }
 
+// CreateUserHandler creates a new user.
+// @Summary      Create a new user
+// @Description  Create a new user with the provided details
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.User  true  "User Data"
+// @Success      201   {object}  models.User
+// @Failure      400   {object}  map[string]string
+// @Failure      500   {object}  map[string]string
+// @Router       /api/v1/users [post]
 func CreateUserHandler(c echo.Context, db database.Service) error {
 	user := new(models.User)
 
@@ -40,6 +51,16 @@ func CreateUserHandler(c echo.Context, db database.Service) error {
 	return c.JSON(http.StatusCreated, user)
 }
 
+// FindOneUserById retrieves a user by ID.
+// @Summary      Get a user
+// @Description  Get a user by their Firebase ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "User ID"
+// @Success      200  {object}  models.User
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/users/users/{id} [get]
 func FindOneUserById(c echo.Context, db database.Service) error {
 	id := c.Param("id")
 
@@ -54,6 +75,18 @@ func FindOneUserById(c echo.Context, db database.Service) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// UpdateUserHandler updates an existing user.
+// @Summary      Update a user
+// @Description  Update a user's details
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string       true  "User ID"
+// @Param        user  body      models.User  true  "User Data"
+// @Success      200   {object}  models.User
+// @Failure      400   {object}  map[string]string
+// @Failure      500   {object}  map[string]string
+// @Router       /api/v1/users/users/{id} [put]
 func UpdateUserHandler(c echo.Context, db database.Service) error {
 	id := c.Param("id")
 	user := new(models.User)
@@ -77,6 +110,16 @@ func UpdateUserHandler(c echo.Context, db database.Service) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// DeleteUserHandler deletes a user.
+// @Summary      Delete a user
+// @Description  Delete a user by ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "User ID"
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/users/users/{id} [delete]
 func DeleteUserHandler(c echo.Context, db database.Service) error {
 	id := c.Param("id")
 

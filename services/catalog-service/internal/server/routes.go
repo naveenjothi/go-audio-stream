@@ -7,12 +7,16 @@ import (
 	"go-audio-stream/services/catalog-service/internal/handlers"
 	"net/http"
 
+	_ "go-audio-stream/services/catalog-service/docs"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

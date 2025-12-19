@@ -1,0 +1,794 @@
+basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  internal_handlers.AddSongRequest:
+    properties:
+      position:
+        type: integer
+      song_id:
+        type: string
+    type: object
+  models.Artist:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      followers:
+        type: integer
+      id:
+        type: string
+      image:
+        type: string
+      is_suspended:
+        type: boolean
+      name:
+        type: string
+      playlists:
+        items:
+          $ref: '#/definitions/models.Playlist'
+        type: array
+      songs:
+        items:
+          $ref: '#/definitions/models.Song'
+        type: array
+      updated_at:
+        type: string
+      verified:
+        type: boolean
+    type: object
+  models.Playlist:
+    properties:
+      created_at:
+        type: string
+      creator_artist_id:
+        type: string
+      creator_user_id:
+        type: string
+      creatorArtist:
+        $ref: '#/definitions/models.Artist'
+      creatorUser:
+        $ref: '#/definitions/models.User'
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_collaborative:
+        type: boolean
+      is_suspended:
+        type: boolean
+      name:
+        type: string
+      playlist_songs:
+        items:
+          $ref: '#/definitions/models.PlaylistSong'
+        type: array
+      private:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+  models.PlaylistSong:
+    properties:
+      created_at:
+        type: string
+      playlist_id:
+        type: string
+      position:
+        type: integer
+      song_id:
+        type: string
+    type: object
+  models.Preferences:
+    properties:
+      language:
+        type: string
+      subscribed_languages:
+        items:
+          type: string
+        type: array
+      userID:
+        type: string
+    type: object
+  models.Song:
+    properties:
+      artists:
+        items:
+          $ref: '#/definitions/models.Artist'
+        type: array
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      duration:
+        type: integer
+      explicit:
+        type: boolean
+      features:
+        $ref: '#/definitions/models.SongFeatures'
+      id:
+        type: string
+      image:
+        type: string
+      instruments:
+        items:
+          $ref: '#/definitions/models.SongInstrument'
+        type: array
+      is_suspended:
+        type: boolean
+      language:
+        type: string
+      name:
+        type: string
+      playlist_songs:
+        items:
+          $ref: '#/definitions/models.PlaylistSong'
+        type: array
+      tags:
+        items:
+          $ref: '#/definitions/models.SongTag'
+        type: array
+      track_number:
+        type: integer
+      updated_at:
+        type: string
+      url:
+        type: string
+      video_url:
+        type: string
+    type: object
+  models.SongFeatures:
+    properties:
+      acousticness:
+        type: number
+      created_at:
+        type: string
+      danceability:
+        type: number
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      duration_ms:
+        type: integer
+      embedding:
+        $ref: '#/definitions/pgvector.Vector'
+      energy:
+        type: number
+      id:
+        type: string
+      instrumentalness:
+        type: number
+      is_suspended:
+        type: boolean
+      loudness:
+        type: number
+      song:
+        $ref: '#/definitions/models.Song'
+      song_id:
+        type: string
+      speechiness:
+        type: number
+      tempo:
+        type: number
+      updated_at:
+        type: string
+      valence:
+        type: number
+    type: object
+  models.SongInstrument:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      is_suspended:
+        type: boolean
+      name:
+        type: string
+      songs:
+        items:
+          $ref: '#/definitions/models.Song'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  models.SongTag:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      is_suspended:
+        type: boolean
+      name:
+        type: string
+      songs:
+        items:
+          $ref: '#/definitions/models.Song'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      firebase_id:
+        type: string
+      first_name:
+        type: string
+      follows:
+        items:
+          $ref: '#/definitions/models.Artist'
+        type: array
+      id:
+        type: string
+      is_suspended:
+        type: boolean
+      last_name:
+        type: string
+      mobile:
+        type: string
+      photo_url:
+        type: string
+      playlists:
+        items:
+          $ref: '#/definitions/models.Playlist'
+        type: array
+      preferences:
+        $ref: '#/definitions/models.Preferences'
+      updated_at:
+        type: string
+      user_name:
+        type: string
+    type: object
+  pgvector.Vector:
+    type: object
+host: localhost:4000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the catalog service for the audio streaming platform.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Audio Stream Catalog Service
+  version: "1.0"
+paths:
+  /api/v1/playlists/:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all playlists
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Playlist'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all playlists
+      tags:
+      - playlists
+    post:
+      consumes:
+      - application/json
+      description: Create a new playlist with the provided details
+      parameters:
+      - description: Playlist Data
+        in: body
+        name: playlist
+        required: true
+        schema:
+          $ref: '#/definitions/models.Playlist'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Playlist'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new playlist
+      tags:
+      - playlists
+  /api/v1/playlists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a playlist by ID
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a playlist
+      tags:
+      - playlists
+    get:
+      consumes:
+      - application/json
+      description: Get a playlist by ID
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Playlist'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a playlist
+      tags:
+      - playlists
+    put:
+      consumes:
+      - application/json
+      description: Update a playlist's details
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Playlist Data
+        in: body
+        name: playlist
+        required: true
+        schema:
+          $ref: '#/definitions/models.Playlist'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Playlist'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a playlist
+      tags:
+      - playlists
+  /api/v1/playlists/{id}/songs:
+    post:
+      consumes:
+      - application/json
+      description: Add a song to a playlist
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Song Data
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handlers.AddSongRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PlaylistSong'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add song to playlist
+      tags:
+      - playlists
+  /api/v1/playlists/{id}/songs/{song_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a song from a playlist
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Song ID
+        in: path
+        name: song_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remove song from playlist
+      tags:
+      - playlists
+  /api/v1/songs/:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all songs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all songs
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Create a new song with the provided details
+      parameters:
+      - description: Song Data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Song'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new song
+      tags:
+      - songs
+  /api/v1/songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a song by ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a song
+      tags:
+      - songs
+    get:
+      consumes:
+      - application/json
+      description: Get a song by ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Song'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a song
+      tags:
+      - songs
+    put:
+      consumes:
+      - application/json
+      description: Update a song's details
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Song Data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Song'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a song
+      tags:
+      - songs
+  /api/v1/users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided details
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /api/v1/users/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get a user by their Firebase ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update a user's details
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a user
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"

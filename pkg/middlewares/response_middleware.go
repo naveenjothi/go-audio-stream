@@ -3,6 +3,7 @@ package middlewares
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,6 +23,11 @@ func (w *CustomResponseWriter) Write(b []byte) (int, error) {
 
 func CustomResponseMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		// Skip wrapping for swagger documentation
+		if strings.HasPrefix(c.Request().URL.Path, "/swagger") {
+			return next(c)
+		}
+
 		// Create a custom response writer to capture the response
 		originalWriter := c.Response().Writer
 		buffer := &bytes.Buffer{}
